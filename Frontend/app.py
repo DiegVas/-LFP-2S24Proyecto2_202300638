@@ -19,15 +19,15 @@ class Proyecto2App:
         self.style = ttk.Style()
         self.style.theme_use('clam')
         
-        self.style.configure("TFrame", background="#f0f0f0")
-        self.style.configure("TNotebook", background="#f0f0f0", tabmargins=[2, 5, 2, 0])
-        self.style.configure("TNotebook.Tab", background="#d9d9d9", padding=[10, 2], font=('Helvetica', 10))
+        self.style.configure("TFrame", background="#fff")
+        self.style.configure("TNotebook", background="#fff", tabmargins=[2, 5, 2, 0])
+        self.style.configure("TNotebook.Tab", background="#6effc3", padding=[10, 2], font=('Helvetica', 10))
         self.style.map("TNotebook.Tab", background=[("selected", "#4CAF50")], foreground=[("selected", "white")])
         
-        self.style.configure("Treeview", background="white", foreground="black", rowheight=25, fieldbackground="white")
+        self.style.configure("Treeview", background="#fff", foreground="black", rowheight=25, fieldbackground="white")
         self.style.map('Treeview', background=[('selected', '#4CAF50')])
         
-        self.style.configure("TLabel", background="#f0f0f0", font=('Helvetica', 10))
+        self.style.configure("TLabel", background="#fff", font=('Helvetica', 10))
 
     def create_menu(self):
         menubar = tk.Menu(self.master)
@@ -53,10 +53,10 @@ class Proyecto2App:
         self.create_output_notebook(right_frame)
 
     def create_editor(self, parent):
-        editor_frame = ttk.LabelFrame(parent, text="Editor", padding=10)
+        editor_frame = ttk.Frame(parent ,padding=10 )
         editor_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.editor = tk.Text(editor_frame, wrap=tk.WORD, bg="white", fg="black", insertbackground="black")
+        self.editor = tk.Text(editor_frame, wrap=tk.WORD, bg="#fff", fg="black", insertbackground="black")
         self.editor.pack(fill=tk.BOTH, expand=True)
         
         # Configurar fuente y colores para el editor
