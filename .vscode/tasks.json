@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Ejecutar Fortran",
+      "type": "shell",
+      "command": "./analyzerSintac.exe",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/Backend"
+      },
+      "dependsOn": "Compiler"
+    },
+    {
+      "label": "Compiler",
+      "type": "shell",
+      "command": "gfortran",
+      "args": ["-o", "analyzerSintac", "analyzerSintac.f90", "tokens.o"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/Backend"
+      },
+      "problemMatcher": ["$gcc"],
+      "dependsOn": "CompilerMods"
+    },
+    {
+      "label": "CompilerMods",
+      "type": "shell",
+      "command": "gfortran",
+      "args": ["-c", "tokens.f90"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/Backend"
+      },
+      "dependsOn": "clean"
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "cls"
+    }
+  ]
+}
