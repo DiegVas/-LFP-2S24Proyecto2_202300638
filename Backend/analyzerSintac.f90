@@ -52,7 +52,7 @@ program analyzerSintac
         if (iostat /= 0) exit
         content = trim(content) // trim(buffer) // char(10)
     end do
-    content = trim(content) // char(190)
+    content = trim(content)
     
 
     ! ! Guardar el tamaño de la cadena
@@ -66,9 +66,9 @@ program analyzerSintac
 do while (k <= lenght)
         ! ? Obtener el caracter actual
         charLine = content(k:k)
-
         select case(state)
             case(0) ! * Estado inicial
+
                 if(charLine == char(10)) then
                     ! ! Salto de linea            
                     line_actual = line_actual + 1
@@ -107,7 +107,11 @@ do while (k <= lenght)
                     ! ! Inicio de un numero
                     state = 11
                     current_lexema = charLine
-                
+                else if (charLine == "-") then
+                    ! ! fin  de una caracteristica
+                    state = 12
+                    current_lexema = charLine
+                    numInitSimbol = numInitSimbol + 1
                 else
                     description = "Caracter no reconocido"
                     error_count = error_count + 1
@@ -133,6 +137,8 @@ do while (k <= lenght)
                 if ( charLine /= "-" .and. numInitSimbol == 2) then
                     state = 3
                     k = k-1
+                    numInitSimbol = 0
+                    
 
                 else if (charLine == "-") then
                     numInitSimbol = numInitSimbol + 1
@@ -279,6 +285,27 @@ do while (k <= lenght)
                 end if
             
             
+            
+            case (12) ! * Estado de finalizacion de caracteristica
+                if (charLine == ">" .and. numInitSimbol == 2) then
+                    state = 0
+                    current_lexema = trim(current_lexema) // charLine
+                    call resize_tokens(token_Index, token_capacity, tokens)
+                    lexema = 'Fin de caracteristica'
+                    call save_token(token_Index, tokens, trim(lexema), current_lexema, line_actual, column_actual)
+                    numInitSimbol = 0
+
+
+                else if (charLine == "-") then
+                    numInitSimbol = numInitSimbol + 1
+                    current_lexema = trim(current_lexema) // charLine
+                else
+                    description = "Se esperaba menos de un - para finalizar una caracteristica"
+                    error_count = error_count + 1
+                    call add_error(error_index,token_capacity, errors,charLine, description, line_actual, column_actual)
+                    state = 0
+                    k = k - 1
+                end if
             end select
 
         k = k + 1
@@ -296,11 +323,8 @@ end do
 print *, "Tokens encontrados: ", token_index
 
 do token_count = 1,token_index
-    print *, "Token ", token_index, ":"
     print *, "Lexema: ", tokens(token_count)%lexema
     print *, "Tipo: ", tokens(token_count)%tipo
-    print *, "Fila: ", tokens(token_count)%row
-    print *, "Columna: ", tokens(token_count)%col
 end do
 
 end program
