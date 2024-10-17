@@ -2,8 +2,24 @@
 
 module token_module
     implicit none
+    public :: PAL_CLAVE, IDENTIFICADOR, NUMERO, CADENA , PUNTO , PUNTO_COMA , COMA , PARENTESIS_A , PARENTESIS_C , BLOQUE_A , BLOQUE_C , COMENTARIO_L , COMENTARIO_BLOQUE
+    
+    integer, parameter :: PAL_CLAVE = 0
+    integer, parameter :: IDENTIFICADOR = 1
+    integer, parameter :: NUMERO = 2
+    integer, parameter :: CADENA = 3
+    integer, parameter :: PUNTO = 4
+    integer, parameter :: PUNTO_COMA = 5
+    integer, parameter :: COMA = 6
+    integer, parameter :: PARENTESIS_A = 7
+    integer, parameter :: PARENTESIS_C = 8
+    integer, parameter :: BLOQUE_A = 9
+    integer, parameter :: BLOQUE_C = 10
+    integer, parameter :: COMENTARIO_L = 11
+    integer, parameter :: COMENTARIO_BLOQUE = 12
+ 
     type :: token
-        character(len=100) :: tipo
+        integer :: tipo
         character(len=100) :: lexema
         integer :: row
         integer :: col
@@ -17,65 +33,67 @@ module token_module
     end type error
 
 contains
-    subroutine resize_tokens(token_Index, token_capacity, tokens)
+
+    subroutine addToken (typeToken , valor , row, col , tokens)
         implicit none
-        integer, intent(inout) :: token_Index
-        integer, intent(inout) :: token_capacity
-        type(token), allocatable, intent(inout) :: tokens(:)
-        type(token), allocatable :: temp_tokens(:)
+        integer, intent(in) :: typeToken
+        character(len=*), intent(inout) :: valor
+        integer, intent(in) :: row
+        integer, intent(in) :: col
+        type(token), dimension(:), allocatable, intent(inout) :: tokens
+        type(token) :: newToken
+        type(token),  dimension(:), allocatable :: temp_tokens
+        integer :: actualSize
 
-        token_Index = token_Index + 1
-        if (token_Index > token_capacity) then
-            token_capacity = token_capacity * 2
-            allocate(temp_tokens(token_capacity))
-            temp_tokens(1:token_Index-1) = tokens
-            deallocate(tokens)
-            allocate(tokens(token_capacity))
-            tokens(1:token_Index-1) = temp_tokens(1:token_Index-1)
-            deallocate(temp_tokens)
-        end if
-    end subroutine resize_tokens
+        newToken%tipo = typeToken
+        newToken%lexema = valor
+        newToken%row = row
+        newToken%col = col
 
-    subroutine save_token(token_Index, tokens, tipo, lexema, row, col)
-        implicit none
-        integer, intent(in) :: token_Index
-        type(token), allocatable, intent(inout) :: tokens(:)
-        character(len=*), intent(in) :: tipo, lexema
-        integer, intent(in) :: row, col
+        actualSize = size(tokens)
 
-        tokens(token_Index)%tipo = tipo
-        tokens(token_Index)%lexema = trim(lexema)
-        tokens(token_Index)%row = row
-        tokens(token_Index)%col = col
-    end subroutine save_token
+        allocate(temp_tokens(actualSize + 1))
 
-        subroutine add_error(error_Index, error_capacity, errors, caracter, descripcion, fila, columna)
-        implicit none
-        integer, intent(inout) :: error_Index
-        integer, intent(inout) :: error_capacity
-        type(error), allocatable, intent(inout) :: errors(:)
-        type(error), allocatable :: temp_errors(:)
-        character(len=*), intent(in) :: caracter
-        character(len=100), intent(in) :: descripcion
-        integer, intent(in) :: fila, columna
-
-        error_Index = error_Index + 1
-        if (error_Index > error_capacity) then
-            error_capacity = error_capacity * 2
-            allocate(temp_errors(error_capacity))
-            temp_errors(1:error_Index-1) = errors
-            deallocate(errors)
-            allocate(errors(error_capacity))
-            errors(1:error_Index-1) = temp_errors(1:error_Index-1)
-            deallocate(temp_errors)
+        if (actualSize > 0) then
+            temp_tokens(1:actualSize) = tokens
         end if
 
-        allocate(character(len=len(caracter)) :: errors(error_Index)%caracter)
-        errors(error_Index)%caracter = caracter
-        errors(error_Index)%descripcion = descripcion
-        errors(error_Index)%fila = fila
-        errors(error_Index)%columna = columna
-    end subroutine add_error
+        temp_tokens(actualSize + 1) = newToken
 
+        call move_alloc(temp_tokens, tokens)
+
+        valor = ""
+    end subroutine addToken
+
+    subroutine addError (character , description , row, col , errors)
+        implicit none
+        character(len=*), intent(inout) :: character
+        character(len=*), intent(inout) :: description
+        integer, intent(in) :: row
+        integer, intent(in) :: col
+        type(error), dimension(:), allocatable, intent(inout) :: errors
+        type(error) :: newError
+        type(error),  dimension(:), allocatable :: temp_errors
+        integer :: actualSize
+
+        newError%caracter = character
+        newError%descripcion = description
+        newError%fila = row
+        newError%columna = col
+
+        actualSize = size(errors)
+
+        allocate(temp_errors(actualSize + 1))
+
+        if (actualSize > 0) then
+            temp_errors(1:actualSize) = errors
+        end if
+
+        temp_errors(actualSize + 1) = newError
+        call move_alloc(temp_errors, errors)
+
+        character = ""
+    
+    end subroutine addError
 
 end module token_module
