@@ -2,7 +2,7 @@
 
 module token_module
     implicit none
-    public :: PAL_CLAVE, IDENTIFICADOR, NUMERO, CADENA , PUNTO , PUNTO_COMA , COMA , PARENTESIS_A , PARENTESIS_C , BLOQUE_A , BLOQUE_C , COMENTARIO_L , COMENTARIO_BLOQUE
+    public :: PAL_CLAVE, IDENTIFICADOR, NUMERO, CADENA ,MAYOR_QUE , MENOR_QUE , EXCLAMACION , GUION, PUNTO , PUNTO_COMA , COMA , PARENTESIS_A , PARENTESIS_C , COMENTARIO_L , COMENTARIO_BLOQUE
     
     integer, parameter :: PAL_CLAVE = 0
     integer, parameter :: IDENTIFICADOR = 1
@@ -13,10 +13,13 @@ module token_module
     integer, parameter :: COMA = 6
     integer, parameter :: PARENTESIS_A = 7
     integer, parameter :: PARENTESIS_C = 8
-    integer, parameter :: BLOQUE_A = 9
-    integer, parameter :: BLOQUE_C = 10
-    integer, parameter :: COMENTARIO_L = 11
-    integer, parameter :: COMENTARIO_BLOQUE = 12
+    integer, parameter :: COMENTARIO_L = 9
+    integer, parameter :: COMENTARIO_BLOQUE = 10
+    integer, parameter :: MAYOR_QUE = 11
+    integer, parameter :: MENOR_QUE = 12
+    integer, parameter :: EXCLAMACION = 13
+    integer, parameter :: GUION = 14
+
  
     type :: token
         integer :: tipo
