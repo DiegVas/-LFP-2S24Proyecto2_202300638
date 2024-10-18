@@ -18,7 +18,7 @@
       "label": "Compiler",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-o", "analyzerLex", "analyzerLex.f90", "tokens.o"],
+      "args": ["-o", "analyzerLex", "analyzerLex.f90", "tokens.o", "analyzersintac.o"],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -33,7 +33,7 @@
       "label": "CompilerMods",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-c", "tokens.f90"],
+      "args": ["-c", "analyzersintac.f90", "tokens.f90"],
       "group": {
         "kind": "build",
         "isDefault": true

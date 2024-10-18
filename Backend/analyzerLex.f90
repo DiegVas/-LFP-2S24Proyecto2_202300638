@@ -1,5 +1,6 @@
 program analyzerLex
     use token_module
+    use analyzerSintac
 
     implicit none
     ! ! Decalaracion de variables
@@ -155,7 +156,7 @@ program analyzerLex
                         current_lexema = trim(current_lexema) // charLine
                         ! ! Guardar el token
                         lexema = 'Comentario multilinea'
-                        call addToken(COMENTARIO_BLOQUE, current_lexema, line_actual, column_actual,tokensList)
+                        call addToken(COMENTARIO_L, current_lexema, line_actual, column_actual,tokensList)
                         state = 0
 
                     else
@@ -164,14 +165,35 @@ program analyzerLex
                     end if
                 
                 case (5) ! * Estado de identificacion identificadores
-                    if (charLine >= "a" .and. charLine <= "z" .or. charLine >= "A" .and. charLine <= "Z") then
+                    if (charLine >= "a" .and. charLine <= "z" .or. charLine >= "A" .and. charLine <= "Z" .or. charLine >= "0" .and. charLine <= "9") then
                         current_lexema = trim(current_lexema) // charLine
                     else
-                        if (current_lexema == "Contenedor" .or. current_lexema == "Boton" .or. current_lexema == "Clave" .or. current_lexema == "Etiqueta" .or. current_lexema == "Texto" .or. current_lexema == "Controles" .or. current_lexema == "Propiedades" .or. current_lexema == "Colocacion"  ) then 
-                            call addToken(PAL_CLAVE, current_lexema, line_actual, column_actual,tokensList)
-                        else 
-                            call addToken(IDENTIFICADOR, current_lexema, line_actual, column_actual,tokensList)
-                        end if
+
+                        select case (current_lexema)
+                        case ("Controles")
+                            typeToken = PALC_CONTROL
+                        case ("Propiedades")
+                            typeToken = PALC_PROPIEDADES
+                        case ("Colocacion")
+                            typeToken = PALC_COLOCACION
+                        case ("Contenedor","Boton","Clave","Etiqueta","Texto")
+                            typeToken = PAL_CLAVE
+                        case ("setAncho","setAlto")
+                            typeToken = PALC_NUM
+                        case ("setColorFondo","setColorLetra")
+                            typeToken = PALC_COLOR
+                        case ("setTexto")
+                            typeToken = PALC_TEXTO
+                        case("setPosicion")
+                            typeToken = PALC_POS
+                        case ("add")
+                            typeToken = PALC_ADD
+                        case default
+                            typeToken = IDENTIFICADOR
+                        end select
+                       
+                        call addToken(typeToken, current_lexema, line_actual, column_actual,tokensList)
+                        
                         
                         ! ! Reiniciar el estado
                         state = 0
@@ -227,15 +249,17 @@ program analyzerLex
     end do
 
     ! * Imprimir los tokens
-    print *, "Tokens"
-    do token_index = 1, size(tokensList)
-        print *, "Tipo: ", tokensList(token_index)%tipo, " Lexema: ", tokensList(token_index)%lexema, " Fila: ", tokensList(token_index)%row, " Columna: ", tokensList(token_index)%col
-    end do
+    ! print *, "Tokens"
+    ! do token_index = 1, size(tokensList)
+    !    print *, "Tipo: ", tokensList(token_index)%tipo, " Lexema: ", tokensList(token_index)%lexema, " Fila: ", tokensList(token_index)%row, " Columna: ", tokensList(token_index)%col
+    ! end do
 
-    print *, "Errores"
-    do error_index = 1, size(errorList)
-        print *, "Caracter: ", errorList(error_index)%caracter, " Descripcion: ", errorList(error_index)%descripcion, " Fila: ", errorList(error_index)%fila, " Columna: ", errorList(error_index)%columna
-    end do
+    ! print *, "Errores"
+    ! do error_index = 1, size(errorList)
+    !    print *, "Caracter: ", errorList(error_index)%caracter, " Descripcion: ", errorList(error_index)%descripcion, " Fila: ", errorList(error_index)%fila, " Columna: ", errorList(error_index)%columna
+    ! end do
 
+    ! * Llamar al analizador sintactico
+    call parser(tokensList)
 
 end program
