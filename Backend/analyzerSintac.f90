@@ -4,6 +4,7 @@ module analyzerSintac
     private
     public :: parser
 
+
     type(token), dimension(:) , allocatable :: tokensList(:)
 
     ! Variable para recorrer los tokens
@@ -17,7 +18,7 @@ module analyzerSintac
     subroutine match(typeToken)
         integer, intent(in) :: typeToken
         if (preAnalisis%tipo /= typeToken) then
-            print *, "Error de sintaxis: Se esperaba ", trim(getTypeToken(typeToken)), " en lugar de ", trim(preAnalisis%lexema),preAnalisis%tipo, preAnalisis%row
+            print *,"Sintactico, ", preAnalisis%row, "," , preAnalisis%col, ",",getTypeToken(typeToken),"," ,"Se esperaba ", trim(getTypeToken(typeToken)), " en lugar de ", trim(preAnalisis%lexema)
             stop
         end if
 
@@ -25,8 +26,8 @@ module analyzerSintac
             numPreAnalisis = numPreAnalisis + 1
             preAnalisis = tokensList(numPreAnalisis)
         else
-            print *, "Fin del archivo"
             stop
+            call generate_HTML()
         end if
 
     end subroutine match
@@ -39,7 +40,7 @@ module analyzerSintac
         preAnalisis = tokensList(numPreAnalisis)
 
         !Inicio de la produccion
-        call I()
+        call S()
 
     
         
@@ -52,30 +53,23 @@ module analyzerSintac
         call match(EXCLAMACION)
         call match(GUION)
         call match(GUION)
-        call S()
         
     end subroutine I
 
     ! * Produccion de Identificacion de bloques
     subroutine S()
-        if (preAnalisis%tipo == PALC_CONTROL) then
-            call match(PALC_CONTROL)
-            call C()
-
-        else if (preAnalisis%tipo == PALC_PROPIEDADES) then
-            call match(PALC_PROPIEDADES)
-            call P()
-
-        else if (preAnalisis%tipo == PALC_COLOCACION) then
-            call match(PALC_COLOCACION)
-            call B()
-
-        else
-            print *, "Error de sintaxis: Se esperaba un bloque de control, propiedades o colocacion en lugar de ", preAnalisis%lexema
-            stop
-        end if
-        print *, "Se ha reconocido un bloque de ", preAnalisis%lexema
         call I()
+        call match(PALC_CONTROL)
+        call C()
+
+        call I()
+        call match(PALC_PROPIEDADES)
+        call P()
+
+        call I()
+        call match(PALC_COLOCACION)
+        call B()
+
     end subroutine S
 
     ! ! Produccion bloques de control
@@ -204,7 +198,6 @@ module analyzerSintac
         call match(GUION)
         call match(GUION)
         call match(MAYOR_QUE)
-        call I()
     end subroutine F
 
     ! ! Produccion de comentarios

@@ -145,7 +145,7 @@ contains
             case (GUION)
                 res = "Guion"
             case (PALC_CONTROL)
-                res = "Palabra clave Control"
+                res = "Palabra clave Controles"
             case (PALC_PROPIEDADES)
                 res = "Palabra clave Propiedades"
             case (PALC_COLOCACION)

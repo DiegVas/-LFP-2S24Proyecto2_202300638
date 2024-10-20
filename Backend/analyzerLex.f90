@@ -1,6 +1,7 @@
 program analyzerLex
     use token_module
     use analyzerSintac
+    use htmlanalyzer
 
     implicit none
     ! ! Decalaracion de variables
@@ -43,17 +44,9 @@ program analyzerLex
     allocate(errorList(token_capacity)) ! ? Inicializar la lista de errores
 
 
-    ! !  Abrir el archivo
-    unit = 10
-    open(unit, file='./test/entrada1.LFP', status='old', action='read', iostat=iostat)
-    
-    if (iostat /= 0) then
-        print *, 'Error al abrir el archivo'
-        stop
-    end if
 
     do
-        read(unit, '(A)', iostat=iostat) buffer
+        read(*, '(A)', iostat=iostat) buffer
         if (iostat /= 0) exit
         content = trim(content) // trim(buffer) // char(10)
     end do
@@ -62,8 +55,7 @@ program analyzerLex
     ! ! Guardar el tamaño de la cadena
     lenght = len_trim(content)
 
-    ! ! Cerrar el archivo
-    close(unit)
+
 
 
     ! * Recorrer el contenido del archivo
@@ -79,7 +71,7 @@ program analyzerLex
                         line_actual = line_actual + 1
                         column_actual = 1
 
-                    else if ( charLine == char(32) .OR. charLine == " " .or. charLine == char(9)) then
+                    else if ( charLine == char(32) .or. charLine == char(9)) then
                         ! ! Ignorar espacios en blanco                       
                     else if ( charLine == "/" ) then
                         ! ! Inicio de comentario
@@ -140,9 +132,12 @@ program analyzerLex
 
                     end if
                 
-                case (3) ! * Estado de inicio de comentario multilinea
+                case (3) ! * Estado de inicio de comentario
 
-                    if (charLine /= "*" ) then
+                    if (charLine == char(10)) then
+                        line_actual = line_actual + 1
+                        current_lexema = trim(current_lexema) // charLine
+                    else if (charLine /= "*" ) then
                         current_lexema = trim(current_lexema) // charLine
 
                     else
@@ -160,7 +155,10 @@ program analyzerLex
                         state = 0
 
                     else
-                        state = 6
+                        if (charLine == char(10)) then
+                            line_actual = line_actual + 1
+                        end if
+                        state = 3
                         current_lexema = trim(current_lexema) // charLine
                     end if
                 
@@ -210,7 +208,6 @@ program analyzerLex
                     if (current_lexema == "<") typeToken = MENOR_QUE
                     if (current_lexema == "!") typeToken = EXCLAMACION
                     if (current_lexema == "-") typeToken = GUION
-
                     call addToken(typeToken, current_lexema, line_actual, column_actual,tokensList)
 
                     ! ! Reiniciar el estado
@@ -249,17 +246,18 @@ program analyzerLex
     end do
 
     ! * Imprimir los tokens
-    ! print *, "Tokens"
     ! do token_index = 1, size(tokensList)
-    !    print *, "Tipo: ", tokensList(token_index)%tipo, " Lexema: ", tokensList(token_index)%lexema, " Fila: ", tokensList(token_index)%row, " Columna: ", tokensList(token_index)%col
+    !    print *, getTypeToken(tokensList(token_index)%tipo) ,",",tokensList(token_index)%lexema,",",tokensList(token_index)%row,",",tokensList(token_index)%col
     ! end do
 
-    ! print *, "Errores"
+    ! * Imprimir los errores
+    !print *, "Errores"
     ! do error_index = 1, size(errorList)
-    !    print *, "Caracter: ", errorList(error_index)%caracter, " Descripcion: ", errorList(error_index)%descripcion, " Fila: ", errorList(error_index)%fila, " Columna: ", errorList(error_index)%columna
+    !    print *,"Lexico,",errorList(error_index)%fila ,",", errorList(error_index)%columna, ",",errorList(error_index)%caracter, ",",errorList(error_index)%descripcion
     ! end do
-
     ! * Llamar al analizador sintactico
-    call parser(tokensList)
+    ! call parser(tokensList)
+    call analizeHtml(content)
+
 
 end program

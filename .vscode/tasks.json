@@ -4,7 +4,7 @@
     {
       "label": "Ejecutar Fortran",
       "type": "shell",
-      "command": "./analyzerLex.exe",
+      //"command": "./analyzerLex.exe",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -18,7 +18,7 @@
       "label": "Compiler",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-o", "analyzerLex", "analyzerLex.f90", "tokens.o", "analyzersintac.o"],
+      "args": ["-o", "analyzerLex", "analyzerLex.f90", "tokens.o", "analyzersintac.o", "htmlanalyzer.o"],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -33,7 +33,7 @@
       "label": "CompilerMods",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-c", "analyzersintac.f90", "tokens.f90"],
+      "args": ["-c", "analyzersintac.f90", "tokens.f90", "htmlanalyzer.f90"],
       "group": {
         "kind": "build",
         "isDefault": true

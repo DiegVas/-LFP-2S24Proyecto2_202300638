@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import tkinter.font as tkFont
 from Components.ModernButton import ModernButton
+import subprocess
+import os
 
 class Proyecto2App:
     def __init__(self, master):
@@ -69,8 +71,6 @@ class Proyecto2App:
         analyze_button = ModernButton(button_frame, text="Analizar", command=self.analyze)
         analyze_button.pack(side=tk.LEFT, padx=(0, 5))
 
-        tokens_button = ModernButton(button_frame, text="Ver Tokens", command=self.view_tokens)
-        tokens_button.pack(side=tk.LEFT)
 
     def create_output_notebook(self, parent):
         self.output_notebook = ttk.Notebook(parent)
@@ -97,10 +97,17 @@ class Proyecto2App:
 
     def create_preview_tab(self):
         preview_frame = ttk.Frame(self.output_notebook, padding=10)
-        self.output_notebook.add(preview_frame, text="Vista Previa")
-
-        self.preview_label = ttk.Label(preview_frame, text="La vista previa se mostrará aquí después del análisis")
-        self.preview_label.pack(fill=tk.BOTH, expand=True)
+        self.output_notebook.add(preview_frame, text="Tokens")
+        columns = ("Tipo", "Valor", "Línea", "Columna")
+        self.token_table = ttk.Treeview(preview_frame, columns=columns, show='headings')
+        for col in columns:
+            self.token_table.heading(col, text=col)
+            self.token_table.column(col, width=100)
+        scrollbar = ttk.Scrollbar(preview_frame, orient=tk.VERTICAL, command=self.token_table.yview)
+        self.token_table.configure(yscrollcommand=scrollbar.set)
+        
+        self.token_table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     def new_file(self):
         if self.editor.edit_modified():
@@ -148,30 +155,55 @@ class Proyecto2App:
         if not self.filename:
             messagebox.showerror("Error", "Por favor, guarde el archivo antes de analizarlo.")
             return
-        
-        # Aquí deberías llamar a tu compilador Fortran
-        # Por ahora, simularemos el análisis
+
         self.error_table.delete(*self.error_table.get_children())
         
-        # Simulación de errores (reemplazar con la llamada real al compilador)
-        errors = [
-            ("Léxico", "1", "5", "Identificador", "Carácter no válido"),
-            ("Sintáctico", "3", "10", "';'", "Se esperaba punto y coma")
-        ]
+        readTokens = True
+        
+        errors = []
+        tokens = []
+        
+        message = self.call_Analyzer()
+        message = message.split("\n")
+        for line in message:
+            if line.strip() == "Errores":
+                readTokens = False
+                continue
+                
+            if readTokens:
+               token = tuple(item.strip().strip('"') for item in line.split(','))
+               tokens.append(token)
+            else: 
+                error = tuple(item.strip().strip('"') for item in line.split(','))
+                errors.append(error)
         
         for error in errors:
             self.error_table.insert('', tk.END, values=error)
+            
+        for token in tokens:
+            self.token_table.insert('', tk.END, values=token)
 
-        if not errors:
-            messagebox.showinfo("Análisis Completo", "No se encontraron errores. Se han generado los archivos HTML y CSS.")
-            self.preview_label.config(text="Vista previa del HTML generado")
-        else:
-            messagebox.showwarning("Análisis Completo", f"Se encontraron {len(errors)} errores.")
-
+        messagebox.showinfo("Resultado", "Se ha analizado el archivo")
+        
     def view_tokens(self):
         # Aquí deberías mostrar la tabla de tokens
         # Por ahora, mostraremos un mensaje
         messagebox.showinfo("Tokens", "Aquí se mostraría la tabla de tokens")
+
+    def call_Analyzer(self):
+        contendir = self.editor.get(1.0, tk.END)
+        try:
+            exe_path = os.path.join(
+                os.path.dirname(__file__), "../Backend/analyzerLex.exe"
+            )
+            result = subprocess.run(
+                [exe_path], input=contendir, text=True, capture_output=True
+            )
+            messagebox.showinfo("Resultado", result.stdout)
+            return result.stdout.strip()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+        
 
 if __name__ == "__main__":
     root = tk.Tk()
