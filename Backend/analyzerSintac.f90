@@ -1,5 +1,6 @@
 module analyzerSintac
     use token_module
+    use htmlanalyzer
     implicit none
     private
     public :: parser
@@ -9,26 +10,36 @@ module analyzerSintac
 
     ! Variable para recorrer los tokens
     integer :: numPreAnalisis
+    integer :: errorEntry, numErrors
     ! Variable para almacenar el token actual
     type(token) :: preAnalisis
 
+
     contains
+
 
     !Funcion del metodo parea
     subroutine match(typeToken)
         integer, intent(in) :: typeToken
+
         if (preAnalisis%tipo /= typeToken) then
             print *,"Sintactico, ", preAnalisis%row, "," , preAnalisis%col, ",",getTypeToken(typeToken),"," ,"Se esperaba ", trim(getTypeToken(typeToken)), " en lugar de ", trim(preAnalisis%lexema)
-            stop
+            numPreAnalisis = numPreAnalisis - 1
+            errorEntry = 1
+            numErrors = numErrors + 1
+
         end if
 
         if (numPreAnalisis < size(tokensList)) then
             numPreAnalisis = numPreAnalisis + 1
             preAnalisis = tokensList(numPreAnalisis)
         else
+            if (numErrors == 0) call analizeHtml(tokensList)
             stop
-            call generate_HTML()
+            
         end if
+
+
 
     end subroutine match
 
@@ -36,6 +47,7 @@ module analyzerSintac
     subroutine parser(tokens)
         type(token), dimension(:), intent(in) :: tokens
         tokensList = tokens
+        numErrors = 0
         numPreAnalisis = 1
         preAnalisis = tokensList(numPreAnalisis)
 
@@ -58,16 +70,23 @@ module analyzerSintac
 
     ! * Produccion de Identificacion de bloques
     subroutine S()
+
         call I()
+        errorEntry = 0
         call match(PALC_CONTROL)
+        if (errorEntry == 1) preAnalisis = tokensList(numPreAnalisis + 1)
         call C()
 
         call I()
+        errorEntry = 0
         call match(PALC_PROPIEDADES)
+        if (errorEntry == 1) preAnalisis = tokensList(numPreAnalisis + 1)
         call P()
 
         call I()
+        errorEntry = 0
         call match(PALC_COLOCACION)
+        if (errorEntry == 1) preAnalisis = tokensList(numPreAnalisis + 1)
         call B()
 
     end subroutine S
@@ -143,8 +162,26 @@ module analyzerSintac
             call match (CADENA)
             call match (PARENTESIS_C)
 
+        else if (preAnalisis%tipo == PALC_AL) then
+            call match (PALC_AL)
+            call match (PARENTESIS_A)
+            call match (PALCALINEACION)
+            call match (PARENTESIS_C)
+        
+        else if (preAnalisis%tipo == PALC_MAR) then
+            call match (PALC_MAR)
+            call match (PARENTESIS_A)
+            call match (BOOL)
+            call match (PARENTESIS_C)
+
+        else if (preAnalisis%tipo == PALGRUP) then
+            call match (PALGRUP)
+            call match (PARENTESIS_A)
+            call match (IDENTIFICADOR)
+            call match (PARENTESIS_C)
+
         else
-            print *, "Error de sintaxis: Se esperaba un numero, color o texto en lugar de ", preAnalisis%lexema
+            print *,"Sintactico, ", preAnalisis%row, "," , preAnalisis%col, ",",getTypeToken(preAnalisis%tipo),"," ,"Se esperaba ", trim(getTypeToken(preAnalisis%tipo)), " en lugar de ", trim(preAnalisis%lexema)
             stop
         end if
     end subroutine PC
@@ -188,7 +225,8 @@ module analyzerSintac
             call match (PARENTESIS_C)
 
         else
-            print *, "Error de sintaxis: Se esperaba una propiedad de colocacion o de agregacion ", preAnalisis%lexema
+            print *,"Sintactico, ", preAnalisis%row, "," , preAnalisis%col, ",",getTypeToken(preAnalisis%tipo),"," ,"Se esperaba ", trim(getTypeToken(preAnalisis%tipo)), " en lugar de ", trim(preAnalisis%lexema)
+            numPreAnalisis = numPreAnalisis + 1
             stop
         end if
     end subroutine BC

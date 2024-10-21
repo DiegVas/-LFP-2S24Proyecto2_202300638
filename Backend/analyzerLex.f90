@@ -136,7 +136,6 @@ program analyzerLex
 
                     if (charLine == char(10)) then
                         line_actual = line_actual + 1
-                        current_lexema = trim(current_lexema) // charLine
                     else if (charLine /= "*" ) then
                         current_lexema = trim(current_lexema) // charLine
 
@@ -174,8 +173,18 @@ program analyzerLex
                             typeToken = PALC_PROPIEDADES
                         case ("Colocacion")
                             typeToken = PALC_COLOCACION
-                        case ("Contenedor","Boton","Clave","Etiqueta","Texto")
+                        case ("Contenedor","Boton","Clave","Etiqueta","Texto", "Check", "RadioBoton", "AreaTexto")
                             typeToken = PAL_CLAVE
+                        case ("centro", "izquierdo", "derecho")
+                            typeToken = PALCALINEACION
+                        case ("setGrupo")
+                            typeToken = PALGRUP
+                        case ("setAlineacion")
+                            typeToken = PALC_AL
+                        case ("setMarcada")
+                            typeToken = PALC_MAR
+                        case ("true","false")
+                            typeToken = BOOL
                         case ("setAncho","setAlto")
                             typeToken = PALC_NUM
                         case ("setColorFondo","setColorLetra")
@@ -251,13 +260,13 @@ program analyzerLex
     ! end do
 
     ! * Imprimir los errores
-    !print *, "Errores"
-    ! do error_index = 1, size(errorList)
-    !    print *,"Lexico,",errorList(error_index)%fila ,",", errorList(error_index)%columna, ",",errorList(error_index)%caracter, ",",errorList(error_index)%descripcion
-    ! end do
+    print *, "Errores"
+     do error_index = 1, size(errorList)
+        print *,"Lexico,",errorList(error_index)%fila ,",", errorList(error_index)%columna, ",",errorList(error_index)%caracter, ",",errorList(error_index)%descripcion
+     end do
     ! * Llamar al analizador sintactico
-    ! call parser(tokensList)
-    call analizeHtml(content)
+     call parser(tokensList)
+
 
 
 end program

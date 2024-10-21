@@ -4,6 +4,7 @@ module token_module
     implicit none
     public :: PAL_CLAVE, IDENTIFICADOR, NUMERO, CADENA ,MAYOR_QUE , MENOR_QUE , EXCLAMACION , GUION, PUNTO , PUNTO_COMA , COMA , PARENTESIS_A , PARENTESIS_C , COMENTARIO_L
     public :: PALC_CONTROL, PALC_PROPIEDADES, PALC_COLOCACION, PALC_NUM, PALC_COLOR, PALC_TEXTO, PALC_POS ,PALC_ADD
+    public :: PALC_AL, PALC_MAR,BOOL, PALCALINEACION, PALGRUP
     integer, parameter :: PAL_CLAVE = 0
     integer, parameter :: IDENTIFICADOR = 1
     integer, parameter :: NUMERO = 2
@@ -28,6 +29,11 @@ module token_module
     integer, parameter :: PALC_TEXTO = 19
     integer, parameter :: PALC_POS = 20
     integer, parameter :: PALC_ADD = 21
+    integer, parameter :: PALC_AL = 22
+    integer, parameter :: BOOL = 23
+    integer, parameter :: PALC_MAR = 24
+    integer, parameter :: PALCALINEACION = 25
+    integer, parameter :: PALGRUP = 26
 
 
 

@@ -18,7 +18,15 @@
       "label": "Compiler",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-o", "analyzerLex", "analyzerLex.f90", "tokens.o", "analyzersintac.o", "htmlanalyzer.o"],
+      "args": [
+        "-o",
+        "analyzerLex",
+        "analyzerLex.f90",
+        "tokens.o",
+        "analyzersintac.o",
+        "htmlanalyzer.o",
+        "TypeControls.o"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -33,7 +41,7 @@
       "label": "CompilerMods",
       "type": "shell",
       "command": "gfortran",
-      "args": ["-c", "analyzersintac.f90", "tokens.f90", "htmlanalyzer.f90"],
+      "args": ["-c", "analyzersintac.f90", "tokens.f90", "htmlanalyzer.f90", "TypeControls.f90"],
       "group": {
         "kind": "build",
         "isDefault": true

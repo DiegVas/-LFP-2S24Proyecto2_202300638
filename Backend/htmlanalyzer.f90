@@ -1,37 +1,68 @@
 module htmlanalyzer
-    implicit none
+    use token_module
+    use TypeControl
     public :: analizeHtml
     
+    type(htmlControl), dimension(:), allocatable :: controls
+    type(TagControl), dimension(:), allocatable :: tagControls
+    type(ButtonControl), dimension(:), allocatable :: buttonControls
+    type(CheckControl), dimension(:), allocatable :: checkControls
+    type(RadioControl), dimension(:), allocatable :: radioControls
+    type(TextControl), dimension(:), allocatable :: textControls
+    type(TextAreaControl), dimension(:), allocatable :: textAreaControls
+    type(KeyControl), dimension(:), allocatable :: keyControls
+    type(ContainerControl), dimension(:), allocatable :: containerControls
+
+    
     contains
-    subroutine analizeHtml(content)
-        character(len=*) , intent(in) :: content
+    subroutine analizeHtml(tokens)
+        implicit none
 
-        character(len=1000) :: line
-        character(len=1000) :: control_Type, control_id
-
-        integer :: io, pos , start, endLine
+        type(token), dimension(:), intent(in) :: tokens
+        integer :: typzeContrl
         
-        open(unit=20, file="output.html", status="replace", action="write")
+        integer :: i
+        logical :: blockControl, blockPropertie, blockColocation
 
-        write(20,*) "<html>"
-        write(20,*) "<head>"
-        write(20,*) "<title>HTML Analyzer</title>"
-        write(20,*) "</head>"
-        write(20,*) "<body>"
+        i = 1
+        blockControl = .false.
+        blockPropertie = .false.
+        blockColocation = .false.
 
-        start = 1
-
-        do
-            endLine = index(content(start:), char(10))
-            if (endLine == 0) then
-                endLine = len(content)
-            else
-                endLine = endLine + start - 1
+        do while (i <= size(tokens))
+            if (tokens(i)%tipo == PALC_CONTROL ) then
+                blockControl = .not. blockControl
+                i = i + 1
+            end if
+            if (tokens(i)%tipo == PALC_PROPIEDADES ) then
+                blockPropertie = .not. blockPropertie
+                i = i + 1
             end if
 
-            print *, index(line, "<!--Controles")
+            if (tokens(i)%tipo == PALC_COLOCACION ) then
+                blockColocation = .not. blockColocation
+                i = i + 1
+            end if
 
+            if (tokens(i)%tipo == COMENTARIO_L ) i = i + 1
+
+            if (blockControl) then
+                print *, "Control: ", tokens(i)%lexema , tokens(i)%tipo
+                if (tokens(i)%tipo == PAL_CLAVE) print *, "Clave: ", tokens(i)%lexema
+                
+            else if (blockPropertie) then
+                print *, "Propiedades: ", tokens(i)%lexema
+            else if (blockColocation) then
+                print *, "Colocacion: ", tokens(i)%lexema
+            end if
+
+
+            
+
+
+            i = i + 1
         end do
 
     end subroutine analizeHtml
+
 end module htmlanalyzer

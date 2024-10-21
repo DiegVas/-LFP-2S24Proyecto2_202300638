@@ -71,7 +71,6 @@ class Proyecto2App:
         analyze_button = ModernButton(button_frame, text="Analizar", command=self.analyze)
         analyze_button.pack(side=tk.LEFT, padx=(0, 5))
 
-
     def create_output_notebook(self, parent):
         self.output_notebook = ttk.Notebook(parent)
         self.output_notebook.pack(fill=tk.BOTH, expand=True)
@@ -83,7 +82,7 @@ class Proyecto2App:
         error_frame = ttk.Frame(self.output_notebook, padding=10)
         self.output_notebook.add(error_frame, text="Errores")
 
-        columns = ('Tipo', 'Línea', 'Columna', 'Token Esperado', 'Descripción')
+        columns = ("ID",'Tipo', 'Línea', 'Columna', 'Token Esperado', 'Descripción')
         self.error_table = ttk.Treeview(error_frame, columns=columns, show='headings')
         for col in columns:
             self.error_table.heading(col, text=col)
@@ -98,7 +97,7 @@ class Proyecto2App:
     def create_preview_tab(self):
         preview_frame = ttk.Frame(self.output_notebook, padding=10)
         self.output_notebook.add(preview_frame, text="Tokens")
-        columns = ("Tipo", "Valor", "Línea", "Columna")
+        columns = ("ID","Tipo", "Valor", "Línea", "Columna")
         self.token_table = ttk.Treeview(preview_frame, columns=columns, show='headings')
         for col in columns:
             self.token_table.heading(col, text=col)
@@ -162,6 +161,8 @@ class Proyecto2App:
         
         errors = []
         tokens = []
+        error_id = 1
+        token_id = 1
         
         message = self.call_Analyzer()
         message = message.split("\n")
@@ -171,12 +172,15 @@ class Proyecto2App:
                 continue
                 
             if readTokens:
-               token = tuple(item.strip().strip('"') for item in line.split(','))
+               token = tuple([token_id] + [item.strip().strip('"') for item in line.split(',')])
                tokens.append(token)
+               token_id += 1
             else: 
-                error = tuple(item.strip().strip('"') for item in line.split(','))
+                error = tuple([error_id] + [item.strip().strip('"') for item in line.split(',')])
                 errors.append(error)
-        
+                error_id += 1
+            
+            
         for error in errors:
             self.error_table.insert('', tk.END, values=error)
             
@@ -184,11 +188,6 @@ class Proyecto2App:
             self.token_table.insert('', tk.END, values=token)
 
         messagebox.showinfo("Resultado", "Se ha analizado el archivo")
-        
-    def view_tokens(self):
-        # Aquí deberías mostrar la tabla de tokens
-        # Por ahora, mostraremos un mensaje
-        messagebox.showinfo("Tokens", "Aquí se mostraría la tabla de tokens")
 
     def call_Analyzer(self):
         contendir = self.editor.get(1.0, tk.END)
@@ -199,7 +198,6 @@ class Proyecto2App:
             result = subprocess.run(
                 [exe_path], input=contendir, text=True, capture_output=True
             )
-            messagebox.showinfo("Resultado", result.stdout)
             return result.stdout.strip()
         except Exception as e:
             messagebox.showerror("Error", str(e))
