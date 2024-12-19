@@ -1,0 +1,102 @@
+<!--Controles
+	// Este bloque tambien puede recibir comentarios
+	Contenedor contbody;
+	Contenedor contlogin;
+	Etiqueta labelinicio;
+	Etiqueta labelusuario;
+	Texto textusuario;
+	Etiqueta labelpass;
+	Clave passusuario;
+	Check checkbox;
+	Etiqueta labelrecordar;
+	Boton botonlogin;
+	Contenedor contfooter;
+
+Controles-->
+
+<!--Propiedades
+	// Inicio contbody
+	contbody.setAncho(900);
+	contbody.setAlto(500);
+	contbody.setColorFondo(153, 153, 161);
+
+	// Inicio contlogin
+	contlogin.setAncho(300);
+	contlogin.setAlto(350);
+	contlogin.setColorFondo(244, 244, 246);
+
+	// Inicio labelinicio
+	labelinicio.setColorLetra(15, 76, 92);
+	labelinicio.setTexto("BIENVENIDO");
+
+	// Inicio labelusuario
+	labelusuario.setTexto("Usuario");
+	
+	// Inicio textusuario
+	textusuario.setAlto(20);
+	textusuario.setAncho(200);
+	textusuario.setTexto("");
+
+	// Inicio labelpass
+	labelpass.setTexto("Password");
+
+	// Inicio passusuario
+	passusuario.setAncho(200);
+	passusuario.setAlto(20);
+	passusuario.setAlineacion(centro);
+	passusuario.setTexto("");
+
+	// Inicio checkbox
+	checkbox.setMarcada(true);
+    
+	// Inicio labelrecordar
+	labelrecordar.setTexto("Recordar Password");
+	// Inicio botonlogin
+	botonlogin.setAlto(30);
+	botonlogin.setAncho(150);
+	botonlogin.setTexto("Ingresar");
+	botonlogin.setAlineacion(centro);
+	
+	// Inicio contfooter
+	contfooter.setAlto(100);
+	contfooter.setAncho(900);
+	contfooter.setColorFondo(4, 51, 59);
+
+Propiedades -->
+
+<!--Colocacion
+	// contbody
+	contbody.setPosicion(0,0);
+	this.add(contbody);
+	// contlogin
+	contlogin.setPosicion(300,75);
+	contbody.add(contlogin);
+	// labelinicio
+	labelinicio.setPosicion(112, 50);
+	contlogin.add(labelinicio);
+	// labelusuario
+	labelusuario.setPosicion(50, 100);
+	contlogin.add(labelusuario);
+	// textusuario
+	textusuario.setPosicion(50, 120);
+	contlogin.add(textusuario);
+	// labelusuario
+	labelpass.setPosicion(50, 160);
+	contlogin.add(labelpass);
+	// passusuario
+	passusuario.setPosicion(50, 180);
+	contlogin.add(passusuario);
+	// checkbox
+	checkbox.setPosicion(50, 220);
+	contlogin.add(checkbox);
+	// labelrecordar
+	labelrecordar.setPosicion(80, 223);
+	contlogin.add(labelrecordar);
+	// botonlogin
+	botonlogin.setPosicion(75,270);
+	contlogin.add(botonlogin);
+	// contfooter
+	contfooter.setPosicion(0, 500);
+	this.add(contfooter);
+
+Colocacion -->

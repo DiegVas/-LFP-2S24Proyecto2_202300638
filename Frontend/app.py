@@ -16,6 +16,7 @@ class Proyecto2App:
         self.create_styles()
         self.create_menu()
         self.create_main_layout()
+        self.create_status_bar()
 
     def create_styles(self):
         self.style = ttk.Style()
@@ -30,6 +31,35 @@ class Proyecto2App:
         self.style.map('Treeview', background=[('selected', '#4CAF50')])
         
         self.style.configure("TLabel", background="#fff", font=('Helvetica', 10))
+        
+        # Add style for status bar
+        self.style.configure("StatusBar.TLabel", 
+                           background="#f0f0f0", 
+                           foreground="#333333", 
+                           padding=(5, 2))
+
+    def create_status_bar(self):
+        # Create status bar frame
+        self.status_bar = ttk.Frame(self.master)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        # Create cursor position label
+        self.cursor_position_label = ttk.Label(
+            self.status_bar, 
+            text="Línea: 1, Columna: 0", 
+            style="StatusBar.TLabel"
+        )
+        self.cursor_position_label.pack(side=tk.RIGHT, padx=5)
+
+    def update_cursor_position(self, event=None):
+        # Get current cursor position
+        cursor_pos = self.editor.index(tk.INSERT)
+        # Split into line and column
+        line, col = cursor_pos.split('.')
+        # Update label
+        self.cursor_position_label.config(
+            text=f"Línea: {line}, Columna: {int(col) + 1}"
+        )
 
     def create_menu(self):
         menubar = tk.Menu(self.master)
@@ -64,6 +94,14 @@ class Proyecto2App:
         # Configurar fuente y colores para el editor
         editor_font = tkFont.Font(family="Consolas", size=11)
         self.editor.configure(font=editor_font)
+        
+        # Bind cursor movement events
+        self.editor.bind('<KeyRelease>', self.update_cursor_position)
+        self.editor.bind('<Button-1>', self.update_cursor_position)
+        self.editor.bind('<Up>', self.update_cursor_position)
+        self.editor.bind('<Down>', self.update_cursor_position)
+        self.editor.bind('<Left>', self.update_cursor_position)
+        self.editor.bind('<Right>', self.update_cursor_position)
 
         button_frame = ttk.Frame(editor_frame)
         button_frame.pack(fill=tk.X, pady=(10, 0))
@@ -201,7 +239,6 @@ class Proyecto2App:
             return result.stdout.strip()
         except Exception as e:
             messagebox.showerror("Error", str(e))
-        
 
 if __name__ == "__main__":
     root = tk.Tk()

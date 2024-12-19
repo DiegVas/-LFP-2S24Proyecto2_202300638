@@ -44,16 +44,15 @@ program analyzerLex
     allocate(errorList(token_capacity)) ! ? Inicializar la lista de errores
 
 
-
     do
         read(*, '(A)', iostat=iostat) buffer
         if (iostat /= 0) exit
         content = trim(content) // trim(buffer) // char(10)
     end do
-    
 
     ! ! Guardar el tamaño de la cadena
     lenght = len_trim(content)
+
 
 
 
@@ -162,7 +161,7 @@ program analyzerLex
                     end if
                 
                 case (5) ! * Estado de identificacion identificadores
-                    if (charLine >= "a" .and. charLine <= "z" .or. charLine >= "A" .and. charLine <= "Z" .or. charLine >= "0" .and. charLine <= "9") then
+                    if (charLine >= "a" .and. charLine <= "z" .or. charLine >= "A" .and. charLine <= "Z" .or. charLine >= "0" .and. charLine <= "9" .or. charLine == "_") then
                         current_lexema = trim(current_lexema) // charLine
                     else
 
@@ -255,9 +254,9 @@ program analyzerLex
     end do
 
     ! * Imprimir los tokens
-    ! do token_index = 1, size(tokensList)
-    !    print *, getTypeToken(tokensList(token_index)%tipo) ,",",tokensList(token_index)%lexema,",",tokensList(token_index)%row,",",tokensList(token_index)%col
-    ! end do
+     do token_index = 1, size(tokensList)
+        print *, getTypeToken(tokensList(token_index)%tipo) ,",",tokensList(token_index)%lexema,",",tokensList(token_index)%row,",",tokensList(token_index)%col
+     end do
 
     ! * Imprimir los errores
     print *, "Errores"

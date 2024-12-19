@@ -28,12 +28,12 @@ module token_module
     integer, parameter :: PALC_COLOR = 18
     integer, parameter :: PALC_TEXTO = 19
     integer, parameter :: PALC_POS = 20
-    integer, parameter :: PALC_ADD = 21
-    integer, parameter :: PALC_AL = 22
-    integer, parameter :: BOOL = 23
-    integer, parameter :: PALC_MAR = 24
-    integer, parameter :: PALCALINEACION = 25
-    integer, parameter :: PALGRUP = 26
+    integer, parameter :: PALC_AL = 21
+    integer, parameter :: PALC_MAR = 22
+    integer, parameter :: PALCALINEACION = 23
+    integer, parameter :: PALGRUP = 24
+    integer, parameter :: BOOL = 25
+    integer, parameter :: PALC_ADD = 26
 
 
 
